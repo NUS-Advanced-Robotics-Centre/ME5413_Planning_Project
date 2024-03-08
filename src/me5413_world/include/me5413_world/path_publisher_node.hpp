@@ -3,7 +3,7 @@
  * Copyright (C) 2023 SS47816
 
  * Declarations for PathPublisherNode class
- 
+
 **/
 
 #ifndef PATH_PUBLISHER_NODE_H_
@@ -33,26 +33,27 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <visualization_msgs/MarkerArray.h>
 
-namespace me5413_world 
+namespace me5413_world
 {
 
 class PathPublisherNode
 {
  public:
   PathPublisherNode();
-  virtual ~PathPublisherNode() {};
+  virtual ~PathPublisherNode(){};
 
  private:
-  void timerCallback(const ros::TimerEvent&);
-  void robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom);
-  
-  void publish_global_path(const double A, const double B, const double t_res);
-  void publish_local_path(const geometry_msgs::PoseStamped& robot_pose);
+  void timerCallback(const ros::TimerEvent &);
+  void robotOdomCallback(const nav_msgs::Odometry::ConstPtr &odom);
 
-  size_t find_current_waypoint(const geometry_msgs::PoseStamped& robot_pose);
+  void publishGlobalPath(const double A, const double B, const double t_res);
+  void publishLocalPath(const geometry_msgs::Pose &robot_pose, const size_t n_wp_prev, const size_t n_wp_post);
 
-  tf2::Transform convertPoseToTransform(const geometry_msgs::Pose& pose);
-  std::pair<double, double> calculatePoseError(const geometry_msgs::Pose& pose_robot, const geometry_msgs::Pose& pose_goal);
+  size_t closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start);
+  size_t nextWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start);
+  double getYawFromOrientation(const geometry_msgs::Quaternion &orientation);
+  tf2::Transform convertPoseToTransform(const geometry_msgs::Pose &pose);
+  std::pair<double, double> calculatePoseError(const geometry_msgs::Pose &pose_robot, const geometry_msgs::Pose &pose_goal);
 
   // ROS declaration
   ros::NodeHandle nh_;
