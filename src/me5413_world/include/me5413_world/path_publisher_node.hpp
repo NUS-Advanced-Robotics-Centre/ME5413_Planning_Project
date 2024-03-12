@@ -45,7 +45,6 @@ class PathPublisherNode
  private:
   void timerCallback(const ros::TimerEvent &);
   void robotOdomCallback(const nav_msgs::Odometry::ConstPtr &odom);
-
   void publishGlobalPath(const double A, const double B, const double t_res);
   void publishLocalPath(const geometry_msgs::Pose &robot_pose, const size_t n_wp_prev, const size_t n_wp_post);
 
@@ -64,8 +63,10 @@ class PathPublisherNode
 
   ros::Publisher pub_global_path_;
   ros::Publisher pub_local_path_;
-  ros::Publisher pub_absolute_position_error_;
-  ros::Publisher pub_absolute_heading_error_;
+  ros::Publisher pub_abs_position_error_;
+  ros::Publisher pub_abs_heading_error_;
+  ros::Publisher pub_rms_position_error_;
+  ros::Publisher pub_rms_heading_error_;
 
   ros::Subscriber sub_robot_odom_;
 
@@ -80,10 +81,13 @@ class PathPublisherNode
   nav_msgs::Path global_path_msg_;
   nav_msgs::Path local_path_msg_;
 
-  std_msgs::Float32 absolute_position_error_;
-  std_msgs::Float32 absolute_heading_error_;
-  std_msgs::Float32 relative_position_error_;
-  std_msgs::Float32 relative_heading_error_;
+  std_msgs::Float32 abs_position_error_;
+  std_msgs::Float32 abs_heading_error_;
+  std_msgs::Float32 rms_position_error_;
+  std_msgs::Float32 rms_heading_error_;
+  long long num_time_steps_;
+  double sum_sqr_position_error_;
+  double sum_sqr_heading_error_;
 };
 
 } // namespace me5413_world

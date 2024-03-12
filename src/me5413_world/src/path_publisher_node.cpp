@@ -17,8 +17,10 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
   this->sub_robot_odom_ = nh_.subscribe("/gazebo/ground_truth/state", 1, &PathPublisherNode::robotOdomCallback, this);
   this->pub_global_path_ = nh_.advertise<nav_msgs::Path>("/me5413_world/planning/global_path", 1);
   this->pub_local_path_ = nh_.advertise<nav_msgs::Path>("/me5413_world/planning/local_path", 1);
-  this->pub_absolute_position_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/position_error", 1);
-  this->pub_absolute_heading_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/heading_error", 1);
+  this->pub_abs_position_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/abs_position_error", 1);
+  this->pub_abs_heading_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/abs_heading_error", 1);
+  this->pub_rms_position_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/rms_position_error", 1);
+  this->pub_rms_heading_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/rms_heading_error", 1);
 
   // Initialization
   this->robot_frame_ = "base_link";
@@ -28,26 +30,39 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
   this->global_path_msg_.header.frame_id = this->world_frame_;
   this->local_path_msg_.header.frame_id = this->world_frame_;
 
-  this->absolute_position_error_.data = 0.0;
-  this->absolute_heading_error_.data = 0.0;
-  this->relative_position_error_.data = 0.0;
-  this->relative_heading_error_.data = 0.0;
+  this->abs_position_error_.data = 0.0;
+  this->abs_heading_error_.data = 0.0;
+  this->rms_position_error_.data = 0.0;
+  this->rms_heading_error_.data = 0.0;
+
+  this->num_time_steps_ = 0;
+  this->sum_sqr_position_error_ = 0.0;
+  this->sum_sqr_heading_error_ = 0.0;
 };
 
 void PathPublisherNode::timerCallback(const ros::TimerEvent &)
 {
+  // Publish paths
+  publishGlobalPath(10, 10, 0.01);
+  publishLocalPath(this->pose_world_robot_, 1, 9);
+
   // Calculate absolute errors (wrt to world frame)
-  const std::pair<double, double> error_absolute = calculatePoseError(this->pose_world_robot_, this->pose_world_goal_);
-  this->absolute_position_error_.data = error_absolute.first;
-  this->absolute_heading_error_.data = error_absolute.second;
+  const std::pair<double, double> abs_errors = calculatePoseError(this->pose_world_robot_, this->pose_world_goal_);
+  this->abs_position_error_.data = abs_errors.first;
+  this->abs_heading_error_.data = abs_errors.second;
+
+  // TODO: calculate average errors
+  this->num_time_steps_++;
+  this->sum_sqr_position_error_ += std::pow(abs_errors.first, 2);
+  this->sum_sqr_heading_error_ += std::pow(abs_errors.second, 2);
+  this->rms_position_error_.data = std::sqrt(sum_sqr_position_error_/num_time_steps_);
+  this->rms_heading_error_.data = std::sqrt(sum_sqr_heading_error_/num_time_steps_);
 
   // Publish errors
-  this->pub_absolute_position_error_.publish(this->absolute_position_error_);
-  this->pub_absolute_heading_error_.publish(this->absolute_heading_error_);
-
-  // Publish paths
-  publishGlobalPath(10, 10, 0.001);
-  publishLocalPath(this->pose_world_robot_, 10, 90);
+  this->pub_abs_position_error_.publish(this->abs_position_error_);
+  this->pub_abs_heading_error_.publish(this->abs_heading_error_);
+  this->pub_rms_position_error_.publish(this->rms_position_error_);
+  this->pub_rms_heading_error_.publish(this->rms_heading_error_);
 
   return;
 };
@@ -120,6 +135,7 @@ void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, 
   this->local_path_msg_.header.stamp = ros::Time::now();
   this->local_path_msg_.poses = std::vector<geometry_msgs::PoseStamped>(start, end);
   this->pub_local_path_.publish(this->local_path_msg_);
+  this->pose_world_goal_ = this->local_path_msg_.poses[n_wp_prev].pose;
 }
 
 size_t PathPublisherNode::closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start = 0)
@@ -190,9 +206,10 @@ tf2::Transform PathPublisherNode::convertPoseToTransform(const geometry_msgs::Po
 std::pair<double, double> PathPublisherNode::calculatePoseError(const geometry_msgs::Pose &pose_robot, const geometry_msgs::Pose &pose_goal)
 {
   // Positional Error
-  const double position_error = std::sqrt(
-      std::pow(pose_robot.position.x - pose_goal.position.x, 2) +
-      std::pow(pose_robot.position.y - pose_goal.position.y, 2));
+  const double position_error = std::hypot(
+    pose_robot.position.x - pose_goal.position.x, 
+    pose_robot.position.y - pose_goal.position.y
+  );
 
   // Heading Error
   tf2::Quaternion q_robot, q_wp;

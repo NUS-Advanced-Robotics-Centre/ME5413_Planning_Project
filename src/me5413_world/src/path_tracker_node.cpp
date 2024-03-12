@@ -30,6 +30,9 @@ PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
   this->absolute_heading_error_.data = 0.0;
   this->relative_position_error_.data = 0.0;
   this->relative_heading_error_.data = 0.0;
+
+  // this->pid_lon_ = control::PID(0.1, Vehicle::max_acceleration(), Vehicle::max_deceleration(), PID_Kp, PID_Ki, PID_Kd);
+  // this->pid_lon_ = control::PID(0.1, Vehicle::max_acceleration(), Vehicle::max_deceleration(), PID_Kp, PID_Ki, PID_Kd);
 };
 
 void PathTrackerNode::timerCallback(const ros::TimerEvent&)

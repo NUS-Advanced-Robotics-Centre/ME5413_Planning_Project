@@ -1,17 +1,17 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 78
+    Help Height: 0
     Name: Displays
     Property Tree Widget:
       Expanded:
         - /Global Options1
         - /Status1
         - /Planning1
-        - /Planning1/Local Path1
         - /Evaluation1
-        - /Evaluation1/Absolute Error1/ADE (m)1
+        - /Evaluation1/Absolute Error1
+        - /Evaluation1/RMSE1
       Splitter Ratio: 0.6628242135047913
-    Tree Height: 751
+    Tree Height: 473
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -30,8 +30,6 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: Image
-  - Class: rviz_panel::simplePanel
-    Name: simplePanel
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -211,30 +209,6 @@ Visualization Manager:
       Value: true
     - Class: rviz/Group
       Displays:
-        - Acceleration properties:
-            Acc. vector alpha: 1
-            Acc. vector color: 255; 0; 0
-            Acc. vector scale: 1
-            Derotate acceleration: true
-            Enable acceleration: false
-          Axes properties:
-            Axes scale: 1
-            Enable axes: true
-          Box properties:
-            Box alpha: 1
-            Box color: 255; 0; 0
-            Enable box: false
-            x_scale: 1
-            y_scale: 1
-            z_scale: 1
-          Class: rviz_imu_plugin/Imu
-          Enabled: true
-          Name: Imu
-          Queue Size: 10
-          Topic: /imu/data
-          Unreliable: false
-          Value: true
-          fixed_frame_orientation: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -247,7 +221,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: AxisColor
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -262,12 +236,12 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: -0.05651351809501648
-            Min Value: -0.11392223834991455
+            Max Value: -0.00716748833656311
+            Min Value: -0.06999534368515015
             Value: true
           Axis: Z
           Channel Name: intensity
@@ -275,7 +249,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: AxisColor
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -290,7 +264,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Class: rviz/Camera
           Enabled: false
           Image Rendering: background and overlay
@@ -307,31 +281,21 @@ Visualization Manager:
                 ADE (m): true
                 AHE (deg): true
                 Value: true
-              BoxMarkerArray: true
-              Relative Error:
-                RDE (m): true
-                RHE (deg): true
+              RMSE:
+                ADE (m): true
+                AHE (deg): true
                 Value: true
               Value: true
             Grid: true
             InteractiveMarkers: true
-            Localization:
-              AMCL PoseArray: true
-              AMCL PoseWithCovariance: true
-              Map: true
-              Value: true
             Planning:
-              Foot Print: true
               Full Path: true
-              Global CostMap: true
-              Goal Pose: true
-              Local CostMap: true
               Local Path: true
+              TFTrajectory: true
               Value: true
             RobotModel: true
             Sensing:
               Image: true
-              Imu: true
               LaserScan: true
               PointCloud2: true
               Value: true
@@ -349,97 +313,10 @@ Visualization Manager:
           Transport Hint: compressed
           Unreliable: false
           Value: true
-      Enabled: false
+      Enabled: true
       Name: Sensing
     - Class: rviz/Group
       Displays:
-        - Alpha: 0.699999988079071
-          Class: rviz/Map
-          Color Scheme: map
-          Draw Behind: true
-          Enabled: true
-          Name: Map
-          Topic: /map
-          Unreliable: false
-          Use Timestamp: false
-          Value: true
-        - Alpha: 1
-          Arrow Length: 0.30000001192092896
-          Axes Length: 0.30000001192092896
-          Axes Radius: 0.009999999776482582
-          Class: rviz/PoseArray
-          Color: 255; 25; 0
-          Enabled: true
-          Head Length: 0.07000000029802322
-          Head Radius: 0.029999999329447746
-          Name: AMCL PoseArray
-          Queue Size: 10
-          Shaft Length: 0.23000000417232513
-          Shaft Radius: 0.009999999776482582
-          Shape: Arrow (Flat)
-          Topic: /particlecloud
-          Unreliable: false
-          Value: true
-        - Alpha: 1
-          Axes Length: 1
-          Axes Radius: 0.10000000149011612
-          Class: rviz/PoseWithCovariance
-          Color: 255; 25; 0
-          Covariance:
-            Orientation:
-              Alpha: 0.5
-              Color: 255; 255; 127
-              Color Style: Unique
-              Frame: Local
-              Offset: 1
-              Scale: 1
-              Value: true
-            Position:
-              Alpha: 0.30000001192092896
-              Color: 204; 51; 204
-              Scale: 1
-              Value: true
-            Value: true
-          Enabled: false
-          Head Length: 0.30000001192092896
-          Head Radius: 0.10000000149011612
-          Name: AMCL PoseWithCovariance
-          Queue Size: 10
-          Shaft Length: 1
-          Shaft Radius: 0.05000000074505806
-          Shape: Arrow
-          Topic: /amcl_pose
-          Unreliable: false
-          Value: false
-      Enabled: false
-      Name: Localization
-    - Class: rviz/Group
-      Displays:
-        - Alpha: 1
-          Class: rviz/Polygon
-          Color: 25; 255; 0
-          Enabled: true
-          Name: Foot Print
-          Queue Size: 10
-          Topic: /move_base/local_costmap/footprint
-          Unreliable: false
-          Value: true
-        - Alpha: 1
-          Axes Length: 1
-          Axes Radius: 0.10000000149011612
-          Class: rviz/Pose
-          Color: 255; 25; 0
-          Enabled: true
-          Head Length: 0.20000000298023224
-          Head Radius: 0.10000000149011612
-          Name: Goal Pose
-          Queue Size: 10
-          Shaft Length: 0.5
-          Shaft Radius: 0.05000000074505806
-          Shape: Arrow
-          Topic: /move_base_simple/goal
-          Unreliable: false
-          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -457,19 +334,19 @@ Visualization Manager:
             Z: 0
           Pose Color: 255; 85; 255
           Pose Style: None
-          Queue Size: 10
+          Queue Size: 1
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
           Topic: /me5413_world/planning/global_path
-          Unreliable: false
+          Unreliable: true
           Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
           Color: 114; 159; 207
           Enabled: true
-          Head Diameter: 0.30000001192092896
+          Head Diameter: 0.25
           Head Length: 0.20000000298023224
           Length: 0.30000001192092896
           Line Style: Lines
@@ -479,35 +356,23 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
-          Pose Color: 255; 85; 255
+          Pose Color: 114; 159; 207
           Pose Style: Arrows
-          Queue Size: 10
+          Queue Size: 1
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
-          Shaft Length: 0.10000000149011612
+          Shaft Length: 0.20000000298023224
           Topic: /me5413_world/planning/local_path
-          Unreliable: false
+          Unreliable: true
           Value: true
-        - Alpha: 0.699999988079071
-          Class: rviz/Map
-          Color Scheme: map
-          Draw Behind: false
-          Enabled: false
-          Name: Global CostMap
-          Topic: /move_base/global_costmap/costmap
-          Unreliable: false
-          Use Timestamp: false
-          Value: false
-        - Alpha: 0.699999988079071
-          Class: rviz/Map
-          Color Scheme: map
-          Draw Behind: false
-          Enabled: false
-          Name: Local CostMap
-          Topic: /move_base/local_costmap/costmap
-          Unreliable: false
-          Use Timestamp: false
-          Value: false
+        - Class: jsk_rviz_plugin/TFTrajectory
+          Enabled: true
+          Name: TFTrajectory
+          Value: true
+          color: 173; 127; 168
+          duration: 10
+          frame: base_link
+          line_width: 0.05000000074505806
       Enabled: true
       Name: Planning
     - Class: rviz/Group
@@ -519,7 +384,7 @@ Visualization Manager:
               Enabled: true
               Name: ADE (m)
               Show Value: true
-              Topic: /me5413_world/absolute/position_error
+              Topic: /me5413_world/planning/abs_position_error
               Value: true
               auto color change: true
               auto scale: true
@@ -544,7 +409,7 @@ Visualization Manager:
               Enabled: true
               Name: AHE (deg)
               Show Value: true
-              Topic: /me5413_world/absolute/heading_error
+              Topic: /me5413_world/planning/abs_heading_error
               Value: true
               auto color change: true
               auto scale: true
@@ -564,29 +429,6 @@ Visualization Manager:
               top: 20
               update interval: 0.03999999910593033
               width: 128
-            - Class: jsk_rviz_plugin/PieChart
-              Enabled: false
-              Name: AHE (deg)
-              Topic: /me5413_world/absolute/heading_error
-              Value: false
-              auto color change: true
-              background color: 0; 0; 0
-              backround alpha: 0
-              clockwise rotate direction: false
-              foreground alpha: 0.699999988079071
-              foreground alpha 2: 0.4000000059604645
-              foreground color: 25; 255; 240
-              left: 160
-              max color: 255; 0; 0
-              max color change threthold: 90
-              max value: 180
-              med color: 138; 226; 52
-              med color change threthold: 30
-              min value: -180
-              show caption: true
-              size: 128
-              text size: 14
-              top: 20
           Enabled: true
           Name: Absolute Error
         - Class: rviz/Group
@@ -594,9 +436,9 @@ Visualization Manager:
             - Buffer length: 100
               Class: jsk_rviz_plugin/Plotter2D
               Enabled: true
-              Name: RDE (m)
+              Name: RMSE (position)
               Show Value: true
-              Topic: /me5413_world/relative/position_error
+              Topic: /me5413_world/planning/rms_position_error
               Value: true
               auto color change: true
               auto scale: true
@@ -619,9 +461,9 @@ Visualization Manager:
             - Buffer length: 100
               Class: jsk_rviz_plugin/Plotter2D
               Enabled: true
-              Name: RHE (deg)
+              Name: RMSE (heading)
               Show Value: true
-              Topic: /me5413_world/relative/heading_error
+              Topic: /me5413_world/planning/rms_heading_error
               Value: true
               auto color change: true
               auto scale: true
@@ -641,39 +483,8 @@ Visualization Manager:
               top: 180
               update interval: 0.03999999910593033
               width: 128
-            - Class: jsk_rviz_plugin/PieChart
-              Enabled: false
-              Name: RHE (deg)
-              Topic: /me5413_world/relative/heading_error
-              Value: false
-              auto color change: true
-              background color: 0; 0; 0
-              backround alpha: 0
-              clockwise rotate direction: false
-              foreground alpha: 0.699999988079071
-              foreground alpha 2: 0.4000000059604645
-              foreground color: 25; 255; 240
-              left: 160
-              max color: 255; 0; 0
-              max color change threthold: 90
-              max value: 180
-              med color: 138; 226; 52
-              med color change threthold: 30
-              min value: -180
-              show caption: true
-              size: 128
-              text size: 14
-              top: 180
           Enabled: true
-          Name: Relative Error
-        - Class: rviz/MarkerArray
-          Enabled: true
-          Marker Topic: /gazebo/ground_truth/box_markers
-          Name: BoxMarkerArray
-          Namespaces:
-            {}
-          Queue Size: 100
-          Value: true
+          Name: RMSE
       Enabled: true
       Name: Evaluation
   Enabled: true
@@ -704,7 +515,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 14.43697452545166
+      Distance: 12.296568870544434
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -712,17 +523,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.6367400884628296
-        Y: -0.7073296308517456
+        X: 0
+        Y: 0
         Z: 0
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1047967672348022
+      Pitch: 0.8347970247268677
       Target Frame: base_link
-      Yaw: 3.1553993225097656
+      Yaw: 3.2854065895080566
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 4
@@ -765,10 +576,10 @@ Window Geometry:
     collapsed: false
   Height: 1043
   Hide Left Dock: false
-  Hide Right Dock: false
+  Hide Right Dock: true
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000019d0000037afc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d0000037a000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d0061006700650000000284000001330000001600fffffffb0000000c00430061006d00650072006100000002f0000000c70000001600ffffff000000010000014f0000037afc0200000005fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d0000037a000000a400fffffffb0000001600730069006d0070006c006500500061006e0065006c00000002d2000000e50000006e00fffffffb0000000c00540065006c0065006f00700000000287000001150000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000078000000039fc0100000002fb0000000800540069006d0065010000000000000780000003bc00fffffffb0000000800540069006d00650100000000000004500000000000000000000004880000037a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000019d0000037afc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000216000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000002590000015e0000001600fffffffb0000000c00430061006d0065007200610000000316000000a10000001600ffffff000000010000014f0000037afc0200000005fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000037a000000a400fffffffb0000001600730069006d0070006c006500500061006e0065006c00000002d2000000e50000000000000000fb0000000c00540065006c0065006f00700000000287000001150000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000078000000039fc0100000002fb0000000800540069006d0065010000000000000780000003bc00fffffffb0000000800540069006d00650100000000000004500000000000000000000005dd0000037a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -776,9 +587,7 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Views:
-    collapsed: false
+    collapsed: true
   Width: 1920
   X: 0
   Y: 0
-  simplePanel:
-    collapsed: false
