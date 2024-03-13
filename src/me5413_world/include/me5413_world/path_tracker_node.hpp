@@ -52,7 +52,6 @@ class PathTrackerNode
   void localPathCallback(const nav_msgs::Path::ConstPtr& path);
 
   tf2::Transform convertPoseToTransform(const geometry_msgs::Pose& pose);
-  std::pair<double, double> calculatePoseError(const geometry_msgs::Pose& pose_robot, const geometry_msgs::Pose& pose_goal);
   geometry_msgs::Twist computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
 
   // ROS declaration

@@ -37,6 +37,7 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
   this->rms_position_error_.data = 0.0;
   this->rms_heading_error_.data = 0.0;
 
+  this->current_id_ = 0;
   this->num_time_steps_ = 1;
   this->sum_sqr_position_error_ = 0.0;
   this->sum_sqr_heading_error_ = 0.0;
@@ -132,18 +133,26 @@ void PathPublisherNode::publishGlobalPath()
 
 void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, const size_t n_wp_prev, const size_t n_wp_post)
 {
-  size_t id_next = nextWaypoint(robot_pose, this->global_path_msg_, 0);
-  size_t id_start = std::max(id_next - n_wp_prev, size_t(0));
-  size_t id_end = std::min(id_next + n_wp_post, this->global_path_msg_.poses.size() - 1);
+  size_t id_next = nextWaypoint(robot_pose, this->global_path_msg_, this->current_id_);
+  if (id_next >= this->global_path_msg_.poses.size() - 1)
+  {
+    ROS_WARN("Robot has reached the end of the track, please restart");
+  }
+  else
+  {
+    this->current_id_ = std::max(this->current_id_, int(id_next - 1));
+    size_t id_start = std::max(id_next - n_wp_prev, size_t(0));
+    size_t id_end = std::min(id_next + n_wp_post, this->global_path_msg_.poses.size() - 1);
 
-  std::vector<geometry_msgs::PoseStamped>::const_iterator start = this->global_path_msg_.poses.begin() + id_start;
-  std::vector<geometry_msgs::PoseStamped>::const_iterator end = this->global_path_msg_.poses.begin() + id_end;
+    std::vector<geometry_msgs::PoseStamped>::const_iterator start = this->global_path_msg_.poses.begin() + id_start;
+    std::vector<geometry_msgs::PoseStamped>::const_iterator end = this->global_path_msg_.poses.begin() + id_end;
 
-  // Update the message
-  this->local_path_msg_.header.stamp = ros::Time::now();
-  this->local_path_msg_.poses = std::vector<geometry_msgs::PoseStamped>(start, end);
-  this->pub_local_path_.publish(this->local_path_msg_);
-  this->pose_world_goal_ = this->local_path_msg_.poses[n_wp_prev].pose;
+    // Update the message
+    this->local_path_msg_.header.stamp = ros::Time::now();
+    this->local_path_msg_.poses = std::vector<geometry_msgs::PoseStamped>(start, end);
+    this->pub_local_path_.publish(this->local_path_msg_);
+    this->pose_world_goal_ = this->local_path_msg_.poses[n_wp_prev].pose;
+  }
 };
 
 size_t PathPublisherNode::closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start = 0)
@@ -158,13 +167,12 @@ size_t PathPublisherNode::closestWaypoint(const geometry_msgs::Pose &robot_pose,
 
     if (dist <= min_dist)
     {
-      const double yaw_wp = getYawFromOrientation(path.poses[i].pose.orientation);
-      const double yaw_diff = (yaw_robot - yaw_wp) / M_PI * 180.0;
-      if (std::fabs(yaw_diff) <= 90.0)
-      {
-        min_dist = dist;
-        id_closest = i;
-      }
+      min_dist = dist;
+      id_closest = i;
+    }
+    else
+    {
+      break;
     }
   }
 

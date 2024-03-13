@@ -84,6 +84,8 @@ class PathPublisherNode
   std_msgs::Float32 abs_heading_error_;
   std_msgs::Float32 rms_position_error_;
   std_msgs::Float32 rms_heading_error_;
+
+  int current_id_;
   long long num_time_steps_;
   double sum_sqr_position_error_;
   double sum_sqr_heading_error_;

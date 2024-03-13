@@ -41,7 +41,7 @@ PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
   this->world_frame_ = "world";
 
   this->pid_lon_ = control::PID(0.1, 1.0, -1.0, PID_lon_Kp, PID_lon_Ki, PID_lon_Kd);
-  this->pid_lon_ = control::PID(0.1, 2.2, -2.2, PID_lat_Kp, PID_lat_Ki, PID_lat_Kd);
+  this->pid_lat_ = control::PID(0.1, 2.2, -2.2, PID_lat_Kp, PID_lat_Ki, PID_lat_Kd);
 };
 
 void PathTrackerNode::localPathCallback(const nav_msgs::Path::ConstPtr& path)
@@ -59,37 +59,14 @@ void PathTrackerNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom
   this->robot_frame_ = odom->child_frame_id;
   this->odom_world_robot_ = *odom.get();
 
-  // const tf2::Transform T_world_robot = convertPoseToTransform(this->odom_world_robot_.pose.pose);
-  // const tf2::Transform T_robot_world = T_world_robot.inverse();
-
-  // geometry_msgs::TransformStamped transformStamped;
-  // transformStamped.header.stamp = ros::Time::now();
-  // transformStamped.header.frame_id = this->robot_frame_;
-  // transformStamped.child_frame_id = this->world_frame_;
-  // transformStamped.transform.translation.x = T_robot_world.getOrigin().getX();
-  // transformStamped.transform.translation.y = T_robot_world.getOrigin().getY();
-  // transformStamped.transform.translation.z = 0.0;
-  // transformStamped.transform.rotation.x = T_robot_world.getRotation().getX();
-  // transformStamped.transform.rotation.y = T_robot_world.getRotation().getY();
-  // transformStamped.transform.rotation.z = T_robot_world.getRotation().getZ();
-  // transformStamped.transform.rotation.w = T_robot_world.getRotation().getW();
-  
-  // this->tf2_bcaster_.sendTransform(transformStamped);
-
   return;
 };
 
-std::pair<double, double> PathTrackerNode::calculatePoseError(const geometry_msgs::Pose& pose_robot, const geometry_msgs::Pose& pose_goal)
+geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal)
 {
-  // Positional Error
-  const double position_error = std::sqrt(
-    std::pow(pose_robot.position.x - pose_goal.position.x, 2) + 
-    std::pow(pose_robot.position.y - pose_goal.position.y, 2)
-  );
-
   // Heading Error
   tf2::Quaternion q_robot, q_goal;
-  tf2::fromMsg(pose_robot.orientation, q_robot);
+  tf2::fromMsg(odom_robot.pose.pose.orientation, q_robot);
   tf2::fromMsg(pose_goal.orientation, q_goal);
   const tf2::Matrix3x3 m_robot = tf2::Matrix3x3(q_robot);
   const tf2::Matrix3x3 m_goal = tf2::Matrix3x3(q_goal);
@@ -98,20 +75,29 @@ std::pair<double, double> PathTrackerNode::calculatePoseError(const geometry_msg
   m_robot.getRPY(roll, pitch, yaw_robot);
   m_goal.getRPY(roll, pitch, yaw_goal);
 
-  const double heading_error = (yaw_robot - yaw_goal)/M_PI*180.0;
+  const double heading_error = yaw_robot - yaw_goal;
 
-  return std::pair<double, double>(position_error, heading_error);
-}
+  // Lateral Error
+  tf2::Vector3 point_robot, point_goal;
+  tf2::fromMsg(odom_robot.pose.pose.position, point_robot);
+  tf2::fromMsg(pose_goal.position, point_goal);
+  const tf2::Vector3 V_goal_robot = point_robot - point_goal;
+  const double angle_goal_robot = std::atan2(V_goal_robot.getY(), V_goal_robot.getX());
+  const double angle_diff = angle_goal_robot - yaw_goal;
+  const double lat_error = V_goal_robot.length()*std::sin(angle_diff);
 
-geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal)
-{
-  const std::pair<double, double> errors = calculatePoseError(odom_robot.pose.pose, pose_goal);
-  const double position_error = errors.first;
-  const double heading_error  = errors.second;
+  // Velocity
+  tf2::Vector3 robot_vel;
+  tf2::fromMsg(this->odom_world_robot_.twist.twist.linear, robot_vel);
+  const double velocity = robot_vel.length();
 
   geometry_msgs::Twist cmd_vel;
-  cmd_vel.linear.x = pid_lon_.calculate(0.5, position_error);
-  cmd_vel.angular.z = pid_lat_.calculate(0.0, position_error);
+  cmd_vel.linear.x = pid_lon_.calculate(0.5, velocity);
+  // cmd_vel.angular.z = pid_lat_.calculate(0.0, lat_error);
+  cmd_vel.angular.z = -1.0 * (heading_error + std::atan2(1.0 * lat_error, velocity + 0.1));
+
+  std::cout << "robot velocity is " << velocity << " throttle is " << cmd_vel.linear.x << std::endl;
+  std::cout << "lateral error is " << lat_error << " heading_error is " << heading_error << " steering is " << cmd_vel.angular.z << std::endl;
 
   return cmd_vel;
 }
