@@ -29,21 +29,22 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
 
   this->global_path_msg_.header.frame_id = this->world_frame_;
   this->local_path_msg_.header.frame_id = this->world_frame_;
+  this->global_path_msg_.poses = createGlobalPath(10, 10, 0.01);
 
   this->abs_position_error_.data = 0.0;
   this->abs_heading_error_.data = 0.0;
   this->rms_position_error_.data = 0.0;
   this->rms_heading_error_.data = 0.0;
 
-  this->num_time_steps_ = 0;
+  this->num_time_steps_ = 1;
   this->sum_sqr_position_error_ = 0.0;
   this->sum_sqr_heading_error_ = 0.0;
 };
 
 void PathPublisherNode::timerCallback(const ros::TimerEvent &)
 {
-  // Publish paths
-  publishGlobalPath(10, 10, 0.01);
+  // Create and Publish Paths
+  publishGlobalPath();
   publishLocalPath(this->pose_world_robot_, 1, 9);
 
   // Calculate absolute errors (wrt to world frame)
@@ -51,8 +52,7 @@ void PathPublisherNode::timerCallback(const ros::TimerEvent &)
   this->abs_position_error_.data = abs_errors.first;
   this->abs_heading_error_.data = abs_errors.second;
 
-  // TODO: calculate average errors
-  this->num_time_steps_++;
+  // Calculate average errors
   this->sum_sqr_position_error_ += std::pow(abs_errors.first, 2);
   this->sum_sqr_heading_error_ += std::pow(abs_errors.second, 2);
   this->rms_position_error_.data = std::sqrt(sum_sqr_position_error_/num_time_steps_);
@@ -63,6 +63,9 @@ void PathPublisherNode::timerCallback(const ros::TimerEvent &)
   this->pub_abs_heading_error_.publish(this->abs_heading_error_);
   this->pub_rms_position_error_.publish(this->rms_position_error_);
   this->pub_rms_heading_error_.publish(this->rms_heading_error_);
+
+  // Count
+  this->num_time_steps_++;
 
   return;
 };
@@ -88,7 +91,7 @@ void PathPublisherNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr &od
   return;
 };
 
-void PathPublisherNode::publishGlobalPath(const double A, const double B, const double t_res)
+std::vector<geometry_msgs::PoseStamped> PathPublisherNode::createGlobalPath(const double A, const double B, const double t_res)
 {
   std::vector<geometry_msgs::PoseStamped> poses;
   const double t_increament = t_res * 2 * M_PI;
@@ -116,11 +119,15 @@ void PathPublisherNode::publishGlobalPath(const double A, const double B, const 
   }
   poses.back().pose.orientation = tf2::toMsg(q);
 
+  return poses;
+};
+
+void PathPublisherNode::publishGlobalPath()
+{
   // Update the message
   this->global_path_msg_.header.stamp = ros::Time::now();
-  this->global_path_msg_.poses = poses;
   this->pub_global_path_.publish(this->global_path_msg_);
-}
+};
 
 void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, const size_t n_wp_prev, const size_t n_wp_post)
 {
@@ -136,7 +143,7 @@ void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, 
   this->local_path_msg_.poses = std::vector<geometry_msgs::PoseStamped>(start, end);
   this->pub_local_path_.publish(this->local_path_msg_);
   this->pose_world_goal_ = this->local_path_msg_.poses[n_wp_prev].pose;
-}
+};
 
 size_t PathPublisherNode::closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start = 0)
 {
@@ -161,7 +168,7 @@ size_t PathPublisherNode::closestWaypoint(const geometry_msgs::Pose &robot_pose,
   }
 
   return id_closest;
-}
+};
 
 size_t PathPublisherNode::nextWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start = 0)
 {
@@ -179,7 +186,7 @@ size_t PathPublisherNode::nextWaypoint(const geometry_msgs::Pose &robot_pose, co
   }
 
   return id_closest;
-}
+};
 
 double PathPublisherNode::getYawFromOrientation(const geometry_msgs::Quaternion &orientation)
 {
@@ -190,7 +197,7 @@ double PathPublisherNode::getYawFromOrientation(const geometry_msgs::Quaternion 
   m.getRPY(roll, pitch, yaw);
 
   return yaw;
-}
+};
 
 tf2::Transform PathPublisherNode::convertPoseToTransform(const geometry_msgs::Pose &pose)
 {
@@ -224,8 +231,11 @@ std::pair<double, double> PathPublisherNode::calculatePoseError(const geometry_m
 
   const double heading_error = (yaw_robot - yaw_wp) / M_PI * 180.0;
 
-  return std::pair<double, double>(position_error, heading_error);
-}
+  return std::pair<double, double>(
+    position_error, 
+    isnan(heading_error)? 0.0 : heading_error
+  );
+};
 
 } // namespace me5413_world
 
@@ -235,4 +245,4 @@ int main(int argc, char **argv)
   me5413_world::PathPublisherNode path_publisher_node;
   ros::spin(); // spin the ros node.
   return 0;
-}
+};
