@@ -30,7 +30,7 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
 
   this->global_path_msg_.header.frame_id = this->world_frame_;
   this->local_path_msg_.header.frame_id = this->world_frame_;
-  this->global_path_msg_.poses = createGlobalPath(10, 10, 0.01);
+  this->global_path_msg_.poses = createGlobalPath(8, 8, 0.001);
 
   this->abs_position_error_.data = 0.0;
   this->abs_heading_error_.data = 0.0;
@@ -47,7 +47,7 @@ void PathPublisherNode::timerCallback(const ros::TimerEvent &)
 {
   // Create and Publish Paths
   publishGlobalPath();
-  publishLocalPath(this->pose_world_robot_, 1, 9);
+  publishLocalPath(this->pose_world_robot_, 10, 90);
 
   // Calculate absolute errors (wrt to world frame)
   const std::pair<double, double> abs_errors = calculatePoseError(this->pose_world_robot_, this->pose_world_goal_);

@@ -13,18 +13,19 @@ namespace me5413_world
 {
 
 // Dynamic Parameters
-double PID_lon_Kp, PID_lon_Ki, PID_lon_Kd;
-double PID_lat_Kp, PID_lat_Ki, PID_lat_Kd;
+double PID_Kp, PID_Ki, PID_Kd;
+double SPEED_TARGET;
+double STANLEY_K;
 
 void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t level)
 {
-  // PID and Stanley gains
-  PID_lon_Kp = config.PID_lon_Kp;
-  PID_lon_Ki = config.PID_lon_Ki;
-  PID_lon_Kd = config.PID_lon_Kd;
-  PID_lat_Kp = config.PID_lat_Kp;
-  PID_lat_Ki = config.PID_lat_Ki;
-  PID_lat_Kd = config.PID_lat_Kd;
+  // PID 
+  PID_Kp = config.PID_Kp;
+  PID_Ki = config.PID_Ki;
+  PID_Kd = config.PID_Kd;
+  SPEED_TARGET = config.speed_target;
+  // Stanley
+  STANLEY_K = config.stanley_K;
 };
 
 PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
@@ -40,14 +41,13 @@ PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
   this->robot_frame_ = "base_link";
   this->world_frame_ = "world";
 
-  this->pid_lon_ = control::PID(0.1, 1.0, -1.0, PID_lon_Kp, PID_lon_Ki, PID_lon_Kd);
-  this->pid_lat_ = control::PID(0.1, 2.2, -2.2, PID_lat_Kp, PID_lat_Ki, PID_lat_Kd);
+  this->pid_ = control::PID(0.1, 1.0, -1.0, PID_Kp, PID_Ki, PID_Kd);
 };
 
 void PathTrackerNode::localPathCallback(const nav_msgs::Path::ConstPtr& path)
 {
   // Calculate absolute errors (wrt to world frame)
-  this->pose_world_goal_ = path->poses[1].pose;
+  this->pose_world_goal_ = path->poses[11].pose;
   this->pub_cmd_vel_.publish(computeControlOutputs(this->odom_world_robot_, this->pose_world_goal_));
 
   return;
@@ -60,6 +60,13 @@ void PathTrackerNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom
   this->odom_world_robot_ = *odom.get();
 
   return;
+};
+
+double PathTrackerNode::computeStanelyControl(const double heading_error, const double cross_track_error, const double velocity)
+{
+  const double stanley_output = -1.0*(heading_error + std::atan2(STANLEY_K*cross_track_error, std::max(velocity, 0.3)));
+
+  return std::min(std::max(stanley_output, -2.2), 2.2);
 };
 
 geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal)
@@ -92,9 +99,8 @@ geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odom
   const double velocity = robot_vel.length();
 
   geometry_msgs::Twist cmd_vel;
-  cmd_vel.linear.x = pid_lon_.calculate(0.5, velocity);
-  // cmd_vel.angular.z = pid_lat_.calculate(0.0, lat_error);
-  cmd_vel.angular.z = -1.0 * (heading_error + std::atan2(1.0 * lat_error, velocity + 0.1));
+  cmd_vel.linear.x = pid_.calculate(SPEED_TARGET, velocity);
+  cmd_vel.angular.z = computeStanelyControl(heading_error, lat_error, velocity);
 
   std::cout << "robot velocity is " << velocity << " throttle is " << cmd_vel.linear.x << std::endl;
   std::cout << "lateral error is " << lat_error << " heading_error is " << heading_error << " steering is " << cmd_vel.angular.z << std::endl;
