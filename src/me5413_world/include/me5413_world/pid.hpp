@@ -1,8 +1,8 @@
 /** pid.hpp
  * 
- * Copyright (C) 2022 Shuo SUN & Advanced Robotics Center, National University of Singapore
+ * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
  * 
- * Apache License 2.0 https://www.apache.org/licenses/LICENSE-2.0
+ * MIT License
  * 
  * Implementation of PID controller
  */
@@ -22,7 +22,7 @@ class PID
   ~PID() {};
 
   // Returns the manipulated variable given a setpoint and current process value
-  double calculate(double setpoint, double pv);
+  double calculate(const double setpoint, const double pv);
 
  private:
   double dt_;
@@ -44,9 +44,9 @@ PID::PID(double dt, double max, double min, double Kp, double Kd, double Ki) :
   Ki_(Ki),
   pre_error_(0),
   integral_(0) 
-{}
+{};
 
-double PID::calculate( double setpoint, double pv)
+double PID::calculate(const double setpoint, const double pv)
 {
   // Calculate error
   double error = setpoint - pv;
@@ -73,6 +73,6 @@ double PID::calculate( double setpoint, double pv)
   pre_error_ = error;
 
   return output;
-}
+};
 
 } // namespace control

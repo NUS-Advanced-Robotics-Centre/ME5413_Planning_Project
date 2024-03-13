@@ -1,10 +1,11 @@
-/* path_publisher_node.cpp
-
- * Copyright (C) 2023 SS47816
-
+/** path_publisher_node.cpp
+ *
+ * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
+ * 
+ * MIT License
+ * 
  * ROS Node for publishing short term paths
-
-**/
+ */
 
 #include "me5413_world/path_publisher_node.hpp"
 

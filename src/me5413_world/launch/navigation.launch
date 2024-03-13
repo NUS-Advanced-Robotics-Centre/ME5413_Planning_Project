@@ -1,10 +1,12 @@
 <launch>
-  <!-- Launch Move Base -->
-  <include file="$(find jackal_navigation)/launch/include/move_base.launch" />
-  
   <!-- Launch the ME5413 Path Publisher Node -->
   <node ns="me5413_world" pkg="me5413_world" type="path_publisher_node" name="path_publisher_node" output="screen" />
+  <!-- Launch the ME5413 Path Publisher Node -->
+  <node ns="me5413_world" pkg="me5413_world" type="path_tracker_node" name="path_tracker_node" output="screen" />
 
   <!-- Launch Rviz with our settings -->
   <node type="rviz" name="rviz" pkg="rviz" args="-d $(find me5413_world)/rviz/navigation.rviz" output="log" respawn="true"/>
+
+  <!-- Dynamic Reconfigure GUI -->
+  <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" />
 </launch>

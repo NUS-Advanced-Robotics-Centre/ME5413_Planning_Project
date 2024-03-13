@@ -1,10 +1,11 @@
-/* path_publisher_node.hpp
-
- * Copyright (C) 2023 SS47816
-
+/** path_publisher_node.hpp
+ * 
+ * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
+ * 
+ * MIT License
+ * 
  * Declarations for PathPublisherNode class
-
-**/
+ */
 
 #ifndef PATH_PUBLISHER_NODE_H_
 #define PATH_PUBLISHER_NODE_H_
@@ -15,11 +16,9 @@
 
 #include <ros/ros.h>
 #include <ros/console.h>
-#include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
-#include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
-
+#include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -31,7 +30,6 @@
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <visualization_msgs/MarkerArray.h>
 
 namespace me5413_world
 {
