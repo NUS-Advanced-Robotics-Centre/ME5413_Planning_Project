@@ -66,6 +66,8 @@ class PathPublisherNode
   dynamic_reconfigure::Server<me5413_world::path_publisherConfig> server;
   dynamic_reconfigure::Server<me5413_world::path_publisherConfig>::CallbackType f;
 
+  ros::Subscriber sub_robot_odom_;
+
   ros::Publisher pub_global_path_;
   ros::Publisher pub_local_path_;
   ros::Publisher pub_abs_position_error_;
@@ -75,11 +77,8 @@ class PathPublisherNode
   ros::Publisher pub_rms_heading_error_;
   ros::Publisher pub_rms_speed_error_;
 
-  ros::Subscriber sub_robot_odom_;
-
   // Robot pose
   std::string world_frame_;
-  std::string map_frame_;
   std::string robot_frame_;
 
   geometry_msgs::Pose pose_world_goal_;

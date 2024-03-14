@@ -10,6 +10,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   roscpp
+  rviz
   std_msgs
   nav_msgs
   geometry_msgs
@@ -17,12 +18,10 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf2_eigen
   tf2_geometry_msgs
-  rviz
   gazebo_ros
   jsk_rviz_plugins
   jackal_gazebo
   jackal_navigation
-  teleop_twist_keyboard
   dynamic_reconfigure
 )
 

@@ -17,6 +17,8 @@ double SPEED_TARGET;
 double TRACK_A_AXIS;
 double TRACK_B_AXIS;
 double TRACK_WP_NUM;
+double LOCAL_PREV_WP_NUM;
+double LOCAL_NEXT_WP_NUM;
 bool PARAMS_UPDATED;
 
 void dynamicParamCallback(me5413_world::path_publisherConfig& config, uint32_t level)
@@ -27,6 +29,8 @@ void dynamicParamCallback(me5413_world::path_publisherConfig& config, uint32_t l
   TRACK_A_AXIS = config.track_A_axis;
   TRACK_B_AXIS = config.track_B_axis;
   TRACK_WP_NUM = config.track_wp_num;
+  LOCAL_PREV_WP_NUM = config.local_prev_wp_num;
+  LOCAL_NEXT_WP_NUM = config.local_next_wp_num;
   PARAMS_UPDATED = true;
 };
 
@@ -48,7 +52,6 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
 
   // Initialization
   this->robot_frame_ = "base_link";
-  this->map_frame_ = "map";
   this->world_frame_ = "world";
 
   this->global_path_msg_.header.frame_id = this->world_frame_;
@@ -72,10 +75,11 @@ void PathPublisherNode::timerCallback(const ros::TimerEvent &)
   if (PARAMS_UPDATED)
   {
     this->global_path_msg_.poses = createGlobalPath(TRACK_A_AXIS, TRACK_B_AXIS, 1.0/TRACK_WP_NUM);
+    this->current_id_ = 0;
     PARAMS_UPDATED = false;
   }
   publishGlobalPath();
-  publishLocalPath(this->odom_world_robot_.pose.pose, 10, 90);
+  publishLocalPath(this->odom_world_robot_.pose.pose, LOCAL_PREV_WP_NUM, LOCAL_NEXT_WP_NUM);
 
   // Calculate absolute errors (wrt to world frame)
   const std::pair<double, double> abs_errors = calculatePoseError(this->odom_world_robot_.pose.pose, this->pose_world_goal_);

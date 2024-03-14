@@ -31,15 +31,12 @@ NUS ME5413 Autonomous Mobile Robotics Final Project
   * `tf2_ros`
   * `tf2_eigen`
   * `tf2_geometry_msgs`
-  * `pluginlib`
-  * `map_server`
   * `gazebo_ros`
   * `jsk_rviz_plugins`
   * `jackal_gazebo`
   * `jackal_navigation`
   * `velodyne_simulator`
-  * `teleop_twist_keyboard`
-  * dynamic_reconfigure
+  * `dynamic_reconfigure`
 
 ## Installation
 
