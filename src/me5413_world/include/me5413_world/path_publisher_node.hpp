@@ -20,6 +20,7 @@
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
 
@@ -30,6 +31,9 @@
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+#include <dynamic_reconfigure/server.h>
+#include <me5413_world/path_trackerConfig.h>
 
 namespace me5413_world
 {
@@ -59,13 +63,17 @@ class PathPublisherNode
   tf2_ros::Buffer tf2_buffer_;
   tf2_ros::TransformListener tf2_listener_;
   tf2_ros::TransformBroadcaster tf2_bcaster_;
+  dynamic_reconfigure::Server<me5413_world::path_trackerConfig> server;
+  dynamic_reconfigure::Server<me5413_world::path_trackerConfig>::CallbackType f;
 
   ros::Publisher pub_global_path_;
   ros::Publisher pub_local_path_;
   ros::Publisher pub_abs_position_error_;
   ros::Publisher pub_abs_heading_error_;
+  ros::Publisher pub_abs_speed_error_;
   ros::Publisher pub_rms_position_error_;
   ros::Publisher pub_rms_heading_error_;
+  ros::Publisher pub_rms_speed_error_;
 
   ros::Subscriber sub_robot_odom_;
 
@@ -74,21 +82,24 @@ class PathPublisherNode
   std::string map_frame_;
   std::string robot_frame_;
 
-  geometry_msgs::Pose pose_world_robot_;
   geometry_msgs::Pose pose_world_goal_;
+  nav_msgs::Odometry odom_world_robot_;
 
   nav_msgs::Path global_path_msg_;
   nav_msgs::Path local_path_msg_;
 
   std_msgs::Float32 abs_position_error_;
   std_msgs::Float32 abs_heading_error_;
+  std_msgs::Float32 abs_speed_error_;
   std_msgs::Float32 rms_position_error_;
   std_msgs::Float32 rms_heading_error_;
+  std_msgs::Float32 rms_speed_error_;
 
   int current_id_;
   long long num_time_steps_;
   double sum_sqr_position_error_;
   double sum_sqr_heading_error_;
+  double sum_sqr_speed_error_;
 };
 
 } // namespace me5413_world

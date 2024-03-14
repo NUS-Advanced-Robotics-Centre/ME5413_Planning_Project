@@ -13,17 +13,18 @@ namespace me5413_world
 {
 
 // Dynamic Parameters
-double PID_Kp, PID_Ki, PID_Kd;
 double SPEED_TARGET;
+double PID_Kp, PID_Ki, PID_Kd;
 double STANLEY_K;
 
 void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t level)
 {
+  // Common Params
+  SPEED_TARGET = config.speed_target;
   // PID 
   PID_Kp = config.PID_Kp;
   PID_Ki = config.PID_Ki;
   PID_Kd = config.PID_Kd;
-  SPEED_TARGET = config.speed_target;
   // Stanley
   STANLEY_K = config.stanley_K;
 };

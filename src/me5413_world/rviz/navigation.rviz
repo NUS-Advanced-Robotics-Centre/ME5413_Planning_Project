@@ -280,10 +280,12 @@ Visualization Manager:
               Absolute Error:
                 ADE (m): true
                 AHE (deg): true
+                ASE (m/s): true
                 Value: true
               RMSE:
-                ADE (m): true
-                AHE (deg): true
+                RMSE (heading): true
+                RMSE (position): true
+                RMSE (speed): true
                 Value: true
               Value: true
             Grid: true
@@ -429,6 +431,31 @@ Visualization Manager:
               top: 20
               update interval: 0.03999999910593033
               width: 128
+            - Buffer length: 100
+              Class: jsk_rviz_plugin/Plotter2D
+              Enabled: true
+              Name: ASE (m/s)
+              Show Value: true
+              Topic: /me5413_world/planning/abs_speed_error
+              Value: true
+              auto color change: true
+              auto scale: true
+              background color: 0; 0; 0
+              backround alpha: 0
+              border: true
+              foreground alpha: 0.699999988079071
+              foreground color: 25; 255; 240
+              height: 128
+              left: 300
+              linewidth: 2
+              max color: 255; 0; 0
+              max value: 10
+              min value: 0
+              show caption: true
+              text size: 14
+              top: 20
+              update interval: 0.03999999910593033
+              width: 128
           Enabled: true
           Name: Absolute Error
         - Class: rviz/Group
@@ -436,7 +463,7 @@ Visualization Manager:
             - Buffer length: 100
               Class: jsk_rviz_plugin/Plotter2D
               Enabled: true
-              Name: RMSE (position)
+              Name: RMSE (xy)
               Show Value: true
               Topic: /me5413_world/planning/rms_position_error
               Value: true
@@ -461,7 +488,7 @@ Visualization Manager:
             - Buffer length: 100
               Class: jsk_rviz_plugin/Plotter2D
               Enabled: true
-              Name: RMSE (heading)
+              Name: RMSE (yaw)
               Show Value: true
               Topic: /me5413_world/planning/rms_heading_error
               Value: true
@@ -474,6 +501,31 @@ Visualization Manager:
               foreground color: 25; 255; 240
               height: 128
               left: 160
+              linewidth: 2
+              max color: 255; 0; 0
+              max value: 10
+              min value: 0
+              show caption: true
+              text size: 14
+              top: 180
+              update interval: 0.03999999910593033
+              width: 128
+            - Buffer length: 100
+              Class: jsk_rviz_plugin/Plotter2D
+              Enabled: true
+              Name: RMSE (speed)
+              Show Value: true
+              Topic: /me5413_world/planning/rms_speed_error
+              Value: true
+              auto color change: true
+              auto scale: true
+              background color: 0; 0; 0
+              backround alpha: 0
+              border: true
+              foreground alpha: 0.699999988079071
+              foreground color: 25; 255; 240
+              height: 128
+              left: 300
               linewidth: 2
               max color: 255; 0; 0
               max value: 10
@@ -531,9 +583,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8347970247268677
+      Pitch: 0.6847973465919495
       Target Frame: base_link
-      Yaw: 3.2854065895080566
+      Yaw: 3.105402708053589
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 4

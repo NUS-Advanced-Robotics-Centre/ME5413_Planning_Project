@@ -12,16 +12,39 @@
 namespace me5413_world
 {
 
+// Dynamic Parameters
+double SPEED_TARGET;
+double TRACK_A_AXIS;
+double TRACK_B_AXIS;
+double TRACK_WP_NUM;
+bool PARAMS_UPDATED;
+
+void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t level)
+{
+  // Common Params
+  SPEED_TARGET = config.speed_target;
+  // Global Path Settings
+  TRACK_A_AXIS = config.track_A_axis;
+  TRACK_B_AXIS = config.track_B_axis;
+  TRACK_WP_NUM = config.track_wp_num;
+  PARAMS_UPDATED = true;
+};
+
 PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
 {
+  f = boost::bind(&dynamicParamCallback, _1, _2);
+  server.setCallback(f);
+
   this->timer_ = nh_.createTimer(ros::Duration(0.2), &PathPublisherNode::timerCallback, this);
   this->sub_robot_odom_ = nh_.subscribe("/gazebo/ground_truth/state", 1, &PathPublisherNode::robotOdomCallback, this);
   this->pub_global_path_ = nh_.advertise<nav_msgs::Path>("/me5413_world/planning/global_path", 1);
   this->pub_local_path_ = nh_.advertise<nav_msgs::Path>("/me5413_world/planning/local_path", 1);
   this->pub_abs_position_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/abs_position_error", 1);
   this->pub_abs_heading_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/abs_heading_error", 1);
+  this->pub_abs_speed_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/abs_speed_error", 1);
   this->pub_rms_position_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/rms_position_error", 1);
   this->pub_rms_heading_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/rms_heading_error", 1);
+  this->pub_rms_speed_error_ = nh_.advertise<std_msgs::Float32>("/me5413_world/planning/rms_speed_error", 1);
 
   // Initialization
   this->robot_frame_ = "base_link";
@@ -30,7 +53,7 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
 
   this->global_path_msg_.header.frame_id = this->world_frame_;
   this->local_path_msg_.header.frame_id = this->world_frame_;
-  this->global_path_msg_.poses = createGlobalPath(8, 8, 0.001);
+  this->global_path_msg_.poses = createGlobalPath(TRACK_A_AXIS, TRACK_B_AXIS, 1.0/TRACK_WP_NUM);
 
   this->abs_position_error_.data = 0.0;
   this->abs_heading_error_.data = 0.0;
@@ -46,25 +69,37 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
 void PathPublisherNode::timerCallback(const ros::TimerEvent &)
 {
   // Create and Publish Paths
+  if (PARAMS_UPDATED)
+  {
+    this->global_path_msg_.poses = createGlobalPath(TRACK_A_AXIS, TRACK_B_AXIS, 1.0/TRACK_WP_NUM);
+    PARAMS_UPDATED = false;
+  }
   publishGlobalPath();
-  publishLocalPath(this->pose_world_robot_, 10, 90);
+  publishLocalPath(this->odom_world_robot_.pose.pose, 10, 90);
 
   // Calculate absolute errors (wrt to world frame)
-  const std::pair<double, double> abs_errors = calculatePoseError(this->pose_world_robot_, this->pose_world_goal_);
+  const std::pair<double, double> abs_errors = calculatePoseError(this->odom_world_robot_.pose.pose, this->pose_world_goal_);
   this->abs_position_error_.data = abs_errors.first;
   this->abs_heading_error_.data = abs_errors.second;
+  tf2::Vector3 velocity;
+  tf2::fromMsg(this->odom_world_robot_.twist.twist.linear, velocity);
+  this->abs_speed_error_.data = velocity.length() - SPEED_TARGET;
 
   // Calculate average errors
   this->sum_sqr_position_error_ += std::pow(abs_errors.first, 2);
   this->sum_sqr_heading_error_ += std::pow(abs_errors.second, 2);
+  this->sum_sqr_speed_error_ += std::pow(this->abs_speed_error_.data, 2);
   this->rms_position_error_.data = std::sqrt(sum_sqr_position_error_/num_time_steps_);
   this->rms_heading_error_.data = std::sqrt(sum_sqr_heading_error_/num_time_steps_);
+  this->rms_speed_error_.data = std::sqrt(sum_sqr_speed_error_/num_time_steps_);
 
   // Publish errors
   this->pub_abs_position_error_.publish(this->abs_position_error_);
   this->pub_abs_heading_error_.publish(this->abs_heading_error_);
+  this->pub_abs_speed_error_.publish(this->abs_speed_error_);
   this->pub_rms_position_error_.publish(this->rms_position_error_);
   this->pub_rms_heading_error_.publish(this->rms_heading_error_);
+  this->pub_rms_speed_error_.publish(this->rms_speed_error_);
 
   // Count
   this->num_time_steps_++;
@@ -76,9 +111,9 @@ void PathPublisherNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr &od
 {
   this->world_frame_ = odom->header.frame_id;
   this->robot_frame_ = odom->child_frame_id;
-  this->pose_world_robot_ = odom->pose.pose;
+  this->odom_world_robot_ = *odom.get();
 
-  const tf2::Transform T_world_robot = convertPoseToTransform(this->pose_world_robot_);
+  const tf2::Transform T_world_robot = convertPoseToTransform(this->odom_world_robot_.pose.pose);
   const tf2::Transform T_robot_world = T_world_robot.inverse();
 
   geometry_msgs::TransformStamped transformStamped;
