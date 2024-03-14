@@ -1,6 +1,6 @@
 # ME5413_Planning_Project
 
-NUS ME5413 Autonomous Mobile Robotics Final Project
+NUS ME5413 Autonomous Mobile Robotics Planning Project
 > Authors: [Ziggy](https://github.com/ziggyhuang) and [Shuo](https://github.com/SS47816)
 
 ![Ubuntu 20.04](https://img.shields.io/badge/OS-Ubuntu_20.04-informational?style=flat&logo=ubuntu&logoColor=white&color=2bbc8a)
@@ -87,12 +87,6 @@ roslaunch me5413_world path_tracking.launch
 ![rviz_tracking_image](src/me5413_world/media/rviz_tracking.png)
 
 ## Student Tasks
-
-### Task 1 & 2: Path Planning
-
-* Please refer to the PDF file inside.
-
-### Task 3: Path Tracking
 
 * Control your robot to follow the given **figure 8** track.
   * You may use any algorithms you like.
