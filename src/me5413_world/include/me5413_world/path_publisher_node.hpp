@@ -33,7 +33,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <dynamic_reconfigure/server.h>
-#include <me5413_world/path_trackerConfig.h>
+#include <me5413_world/path_publisherConfig.h>
 
 namespace me5413_world
 {
@@ -63,8 +63,8 @@ class PathPublisherNode
   tf2_ros::Buffer tf2_buffer_;
   tf2_ros::TransformListener tf2_listener_;
   tf2_ros::TransformBroadcaster tf2_bcaster_;
-  dynamic_reconfigure::Server<me5413_world::path_trackerConfig> server;
-  dynamic_reconfigure::Server<me5413_world::path_trackerConfig>::CallbackType f;
+  dynamic_reconfigure::Server<me5413_world::path_publisherConfig> server;
+  dynamic_reconfigure::Server<me5413_world::path_publisherConfig>::CallbackType f;
 
   ros::Publisher pub_global_path_;
   ros::Publisher pub_local_path_;

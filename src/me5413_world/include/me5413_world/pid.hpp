@@ -21,6 +21,7 @@ class PID
   PID(double dt, double max, double min, double Kp, double Kd, double Ki);
   ~PID() {};
 
+  void updateSettings(const double Kp, const double Kd, const double Ki);
   // Returns the manipulated variable given a setpoint and current process value
   double calculate(const double setpoint, const double pv);
 
@@ -45,6 +46,13 @@ PID::PID(double dt, double max, double min, double Kp, double Kd, double Ki) :
   pre_error_(0),
   integral_(0) 
 {};
+
+void PID::updateSettings(const double Kp, const double Kd, const double Ki)
+{
+  this->Kp_ = Kp;
+  this->Kd_ = Kd;
+  this->Ki_ = Ki;
+};
 
 double PID::calculate(const double setpoint, const double pv)
 {

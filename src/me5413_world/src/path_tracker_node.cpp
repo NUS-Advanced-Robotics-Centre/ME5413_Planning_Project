@@ -16,6 +16,7 @@ namespace me5413_world
 double SPEED_TARGET;
 double PID_Kp, PID_Ki, PID_Kd;
 double STANLEY_K;
+bool PARAMS_UPDATED;
 
 void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t level)
 {
@@ -27,6 +28,8 @@ void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t lev
   PID_Kd = config.PID_Kd;
   // Stanley
   STANLEY_K = config.stanley_K;
+  
+  PARAMS_UPDATED = true;
 };
 
 PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
@@ -100,11 +103,16 @@ geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odom
   const double velocity = robot_vel.length();
 
   geometry_msgs::Twist cmd_vel;
-  cmd_vel.linear.x = pid_.calculate(SPEED_TARGET, velocity);
+  if (PARAMS_UPDATED)
+  {
+    this->pid_.updateSettings(PID_Kp, PID_Ki, PID_Kd);
+    PARAMS_UPDATED = false;
+  }
+  cmd_vel.linear.x = this->pid_.calculate(SPEED_TARGET, velocity);
   cmd_vel.angular.z = computeStanelyControl(heading_error, lat_error, velocity);
 
-  std::cout << "robot velocity is " << velocity << " throttle is " << cmd_vel.linear.x << std::endl;
-  std::cout << "lateral error is " << lat_error << " heading_error is " << heading_error << " steering is " << cmd_vel.angular.z << std::endl;
+  // std::cout << "robot velocity is " << velocity << " throttle is " << cmd_vel.linear.x << std::endl;
+  // std::cout << "lateral error is " << lat_error << " heading_error is " << heading_error << " steering is " << cmd_vel.angular.z << std::endl;
 
   return cmd_vel;
 }

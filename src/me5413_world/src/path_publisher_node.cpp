@@ -19,7 +19,7 @@ double TRACK_B_AXIS;
 double TRACK_WP_NUM;
 bool PARAMS_UPDATED;
 
-void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t level)
+void dynamicParamCallback(me5413_world::path_publisherConfig& config, uint32_t level)
 {
   // Common Params
   SPEED_TARGET = config.speed_target;
@@ -35,7 +35,7 @@ PathPublisherNode::PathPublisherNode() : tf2_listener_(tf2_buffer_)
   f = boost::bind(&dynamicParamCallback, _1, _2);
   server.setCallback(f);
 
-  this->timer_ = nh_.createTimer(ros::Duration(0.2), &PathPublisherNode::timerCallback, this);
+  this->timer_ = nh_.createTimer(ros::Duration(0.1), &PathPublisherNode::timerCallback, this);
   this->sub_robot_odom_ = nh_.subscribe("/gazebo/ground_truth/state", 1, &PathPublisherNode::robotOdomCallback, this);
   this->pub_global_path_ = nh_.advertise<nav_msgs::Path>("/me5413_world/planning/global_path", 1);
   this->pub_local_path_ = nh_.advertise<nav_msgs::Path>("/me5413_world/planning/local_path", 1);

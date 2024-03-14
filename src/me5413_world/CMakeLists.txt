@@ -27,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 generate_dynamic_reconfigure_options(
+  cfg/path_publisher.cfg
   cfg/path_tracker.cfg
 )
 
@@ -46,7 +47,7 @@ include_directories(
 # Add Nodes
 add_executable(path_publisher_node src/path_publisher_node.cpp)
 target_link_libraries(path_publisher_node ${catkin_LIBRARIES})
-add_dependencies(path_publisher_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(path_publisher_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
 
 add_executable(path_tracker_node src/path_tracker_node.cpp)
 target_link_libraries(path_tracker_node ${catkin_LIBRARIES})
