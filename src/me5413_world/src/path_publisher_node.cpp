@@ -184,10 +184,8 @@ void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, 
   else
   {
     this->current_id_ = std::max(this->current_id_, id_next - 1);
-    std::cout << id_next << ' ' << current_id_ << std::endl;
     int id_start = std::max(id_next - n_wp_prev, 0);
     int id_end = std::min(id_next + n_wp_post, int(this->global_path_msg_.poses.size() - 1));
-    std::cout << id_start << ' ' << id_end << std::endl;
 
     std::vector<geometry_msgs::PoseStamped>::const_iterator start = this->global_path_msg_.poses.begin() + id_start;
     std::vector<geometry_msgs::PoseStamped>::const_iterator end = this->global_path_msg_.poses.begin() + id_end;
