@@ -48,11 +48,11 @@ class PathPublisherNode
   void timerCallback(const ros::TimerEvent &);
   void robotOdomCallback(const nav_msgs::Odometry::ConstPtr &odom);
   void publishGlobalPath();
-  void publishLocalPath(const geometry_msgs::Pose &robot_pose, const size_t n_wp_prev, const size_t n_wp_post);
+  void publishLocalPath(const geometry_msgs::Pose &robot_pose, const int n_wp_prev, const int n_wp_post);
 
   std::vector<geometry_msgs::PoseStamped> createGlobalPath(const double A, const double B, const double t_res);
-  size_t closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start);
-  size_t nextWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const size_t id_start);
+  int closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const int id_start);
+  int nextWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const int id_start);
   double getYawFromOrientation(const geometry_msgs::Quaternion &orientation);
   tf2::Transform convertPoseToTransform(const geometry_msgs::Pose &pose);
   std::pair<double, double> calculatePoseError(const geometry_msgs::Pose &pose_robot, const geometry_msgs::Pose &pose_goal);
