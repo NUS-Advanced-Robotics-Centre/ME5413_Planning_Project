@@ -23,7 +23,7 @@ class PID
 
   void updateSettings(const double Kp, const double Kd, const double Ki);
   // Returns the manipulated variable given a setpoint and current process value
-  double calculate(const double setpoint, const double pv);
+  double calculate(double error);
 
  private:
   double dt_;
@@ -54,11 +54,8 @@ void PID::updateSettings(const double Kp, const double Kd, const double Ki)
   this->Ki_ = Ki;
 };
 
-double PID::calculate(const double setpoint, const double pv)
+double PID::calculate(double error)
 {
-  // Calculate error
-  double error = setpoint - pv;
-
   // Proportional term
   const double P_term = Kp_ * error;
 

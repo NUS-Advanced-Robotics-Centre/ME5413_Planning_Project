@@ -52,7 +52,7 @@ class PathTrackerNode
   void localPathCallback(const nav_msgs::Path::ConstPtr& path);
 
   tf2::Transform convertPoseToTransform(const geometry_msgs::Pose& pose);
-  double computeStanelyControl(const double heading_error, const double cross_track_error, const double velocity);
+  double computeStanleyControl(const double heading_error, const double cross_track_error, const double velocity);
   geometry_msgs::Twist computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
 
   // ROS declaration
@@ -61,6 +61,7 @@ class PathTrackerNode
   ros::Subscriber sub_robot_odom_;
   ros::Subscriber sub_local_path_;
   ros::Publisher pub_cmd_vel_;
+  ros::Publisher pub_target_point_;
 
   tf2_ros::Buffer tf2_buffer_;
   tf2_ros::TransformListener tf2_listener_;
@@ -76,6 +77,7 @@ class PathTrackerNode
 
   // Controllers
   control::PID pid_;
+  control::PID pidYaw_;
 };
 
 } // namespace me5413_world
