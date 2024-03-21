@@ -19,7 +19,7 @@ double PID_Kp, PID_Ki, PID_Kd;
 double STANLEY_K;
 bool PARAMS_UPDATED;
 
-void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t level)
+void dynamicParamCallback(const me5413_world::path_trackerConfig& config, uint32_t level)
 {
   // Common Params
   SPEED_TARGET = config.speed_target;

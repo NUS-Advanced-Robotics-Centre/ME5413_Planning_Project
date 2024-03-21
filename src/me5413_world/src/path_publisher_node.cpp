@@ -22,7 +22,7 @@ double LOCAL_PREV_WP_NUM;
 double LOCAL_NEXT_WP_NUM;
 bool PARAMS_UPDATED = false;
 
-void dynamicParamCallback(me5413_world::path_publisherConfig& config, uint32_t level)
+void dynamicParamCallback(const me5413_world::path_publisherConfig& config, uint32_t level)
 {
   // Common Params
   SPEED_TARGET = config.speed_target;
@@ -201,8 +201,6 @@ void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, 
 
 int PathPublisherNode::closestWaypoint(const geometry_msgs::Pose &robot_pose, const nav_msgs::Path &path, const int id_start = 0)
 {
-  const double yaw_robot = getYawFromOrientation(robot_pose.orientation);
-
   double min_dist = DBL_MAX;
   int id_closest = id_start;
   for (int i = id_start; i < path.poses.size(); i++)

@@ -15,18 +15,18 @@ repos:
       - id: sort-simple-yaml
       - id: trailing-whitespace
 
-  # - repo: https://github.com/pocc/pre-commit-hooks
-  #   rev: master
-  #   hooks:
-  #     - id: clang-format
-  #       args: [--style=Google, -i]
-  #     # - id: clang-tidy
-  #     #   args: [--fix-errors]
-  #     - id: cppcheck
-  #     - id: cpplint
-  #     # - id: oclint
-  #     # - id: uncrustify
-  #     # - id: include-what-you-use
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: master
+    hooks:
+      - id: cppcheck
+      # - id: cpplint
+      # - id: clang-format
+      #   args: [--style=Google, -i]
+      # - id: clang-tidy
+      #   args: [--fix-errors]
+      # - id: oclint
+      # - id: uncrustify
+      # - id: include-what-you-use
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.1.6"
