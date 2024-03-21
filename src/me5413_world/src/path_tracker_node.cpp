@@ -7,6 +7,7 @@
  * ROS Node for robot to track a given path
  */
 
+#include "me5413_world/math_utils.hpp"
 #include "me5413_world/path_tracker_node.hpp"
 
 namespace me5413_world 
@@ -30,7 +31,7 @@ void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t lev
   STANLEY_K = config.stanley_K;
   
   PARAMS_UPDATED = true;
-};
+}
 
 PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
 {
@@ -46,7 +47,7 @@ PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
   this->world_frame_ = "world";
 
   this->pid_ = control::PID(0.1, 1.0, -1.0, PID_Kp, PID_Ki, PID_Kd);
-};
+}
 
 void PathTrackerNode::localPathCallback(const nav_msgs::Path::ConstPtr& path)
 {
@@ -55,7 +56,7 @@ void PathTrackerNode::localPathCallback(const nav_msgs::Path::ConstPtr& path)
   this->pub_cmd_vel_.publish(computeControlOutputs(this->odom_world_robot_, this->pose_world_goal_));
 
   return;
-};
+}
 
 void PathTrackerNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom)
 {
@@ -64,14 +65,14 @@ void PathTrackerNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom
   this->odom_world_robot_ = *odom.get();
 
   return;
-};
+}
 
 double PathTrackerNode::computeStanelyControl(const double heading_error, const double cross_track_error, const double velocity)
 {
   const double stanley_output = -1.0*(heading_error + std::atan2(STANLEY_K*cross_track_error, std::max(velocity, 0.3)));
 
   return std::min(std::max(stanley_output, -2.2), 2.2);
-};
+}
 
 geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal)
 {
@@ -86,7 +87,7 @@ geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odom
   m_robot.getRPY(roll, pitch, yaw_robot);
   m_goal.getRPY(roll, pitch, yaw_goal);
 
-  const double heading_error = yaw_robot - yaw_goal;
+  const double heading_error = unifyAngleRange(yaw_robot - yaw_goal);
 
   // Lateral Error
   tf2::Vector3 point_robot, point_goal;
