@@ -1,16 +1,16 @@
 /** path_tracker_node.cpp
- * 
+ *
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- * 
+ *
  * MIT License
- * 
+ *
  * ROS Node for robot to track a given path
  */
 
 #include "me5413_world/math_utils.hpp"
 #include "me5413_world/path_tracker_node.hpp"
 
-namespace me5413_world 
+namespace me5413_world
 {
 
 // Dynamic Parameters
@@ -23,13 +23,13 @@ void dynamicParamCallback(me5413_world::path_trackerConfig& config, uint32_t lev
 {
   // Common Params
   SPEED_TARGET = config.speed_target;
-  // PID 
+  // PID
   PID_Kp = config.PID_Kp;
   PID_Ki = config.PID_Ki;
   PID_Kd = config.PID_Kd;
   // Stanley
   STANLEY_K = config.stanley_K;
-  
+
   PARAMS_UPDATED = true;
 }
 

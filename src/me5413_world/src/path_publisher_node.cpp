@@ -1,9 +1,9 @@
 /** path_publisher_node.cpp
  *
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- * 
+ *
  * MIT License
- * 
+ *
  * ROS Node for publishing short term paths
  */
 
@@ -267,7 +267,7 @@ std::pair<double, double> PathPublisherNode::calculatePoseError(const geometry_m
 {
   // Positional Error
   const double position_error = std::hypot(
-    pose_robot.position.x - pose_goal.position.x, 
+    pose_robot.position.x - pose_goal.position.x,
     pose_robot.position.y - pose_goal.position.y
   );
 
@@ -285,7 +285,7 @@ std::pair<double, double> PathPublisherNode::calculatePoseError(const geometry_m
   const double heading_error = unifyAngleRange(yaw_robot - yaw_wp) / M_PI * 180.0;
 
   return std::pair<double, double>(
-    position_error, 
+    position_error,
     isLegal(heading_error)? heading_error : 0.0
   );
 }

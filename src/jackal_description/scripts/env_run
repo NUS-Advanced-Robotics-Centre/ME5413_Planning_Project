@@ -8,5 +8,5 @@ ENVVARS_FILE=$1
 shift 1
 
 set -a
-source $ENVVARS_FILE 
+source $ENVVARS_FILE
 $@

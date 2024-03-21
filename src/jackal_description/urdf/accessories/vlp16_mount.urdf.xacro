@@ -1,7 +1,7 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />
 
-  <xacro:macro name="vlp16_mount" params="prefix parent_link topic tower height:=0.1 *origin">    
+  <xacro:macro name="vlp16_mount" params="prefix parent_link topic tower height:=0.1 *origin">
     <xacro:if value="${tower}">
       <link name="${prefix}_vlp16_mount" />
 
@@ -14,7 +14,7 @@
           <origin xyz="0 0 -0.001" rpy="0 0 0" />
         </visual>
       </link>
-      
+
       <link name="${prefix}_vlp16_leg1">
         <visual>
           <geometry>

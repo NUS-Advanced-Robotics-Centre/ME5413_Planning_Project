@@ -1,9 +1,9 @@
 /** pid.hpp
- * 
+ *
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- * 
+ *
  * MIT License
- * 
+ *
  * Implementation of PID controller
  */
 
@@ -44,7 +44,7 @@ PID::PID(double dt, double max, double min, double Kp, double Kd, double Ki) :
   Kd_(Kd),
   Ki_(Ki),
   pre_error_(0),
-  integral_(0) 
+  integral_(0)
 {};
 
 void PID::updateSettings(const double Kp, const double Kd, const double Ki)

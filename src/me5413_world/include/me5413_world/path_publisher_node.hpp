@@ -1,9 +1,9 @@
 /** path_publisher_node.hpp
- * 
+ *
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- * 
+ *
  * MIT License
- * 
+ *
  * Declarations for PathPublisherNode class
  */
 

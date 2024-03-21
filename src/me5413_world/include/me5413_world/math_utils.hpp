@@ -1,9 +1,9 @@
 /** math_utils.h
- * 
+ *
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- * 
+ *
  * MIT License
- * 
+ *
  * Commonly used math functions
 */
 

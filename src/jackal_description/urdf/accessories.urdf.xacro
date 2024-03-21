@@ -198,8 +198,8 @@
   </xacro:if>
 
   <!--
-    Add a Nav. Sat. By default this is a Novatel Smart6, but can be changed with the 
-    JACKAL_NAVSAT_MODEL environment variable. Valid model designations are: 
+    Add a Nav. Sat. By default this is a Novatel Smart6, but can be changed with the
+    JACKAL_NAVSAT_MODEL environment variable. Valid model designations are:
     - smart6 (default)    :: Novatel Smart6
     - smart7              :: Novatel Smart7
   -->
@@ -263,8 +263,8 @@
     </xacro:if>
   </xacro:if>
 
-  <!-- 
-    Add Cameras. 
+  <!--
+    Add Cameras.
     - JACKAL_FLEA3
     - JACKAL_STEREO_FLEA3
     - JACKAL_BB2
@@ -426,7 +426,7 @@
     </joint>
   </xacro:if>
 
-  <!-- Fender Accessories --> 
+  <!-- Fender Accessories -->
   <xacro:if value="$(optenv JACKAL_FRONT_ACCESSORY_FENDER 0)">
     <xacro:include filename="$(find jackal_description)/urdf/accessories/hokuyo_ust10.urdf.xacro" />
     <xacro:if value="$(optenv JACKAL_FRONT_FENDER_UST10 0)">

@@ -1,9 +1,9 @@
 /** path_tracker_node.hpp
- * 
+ *
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- * 
+ *
  * MIT License
- * 
+ *
  * Declarations for PathTrackerNode class
  */
 
@@ -37,7 +37,7 @@
 
 #include "me5413_world/pid.hpp"
 
-namespace me5413_world 
+namespace me5413_world
 {
 
 class PathTrackerNode

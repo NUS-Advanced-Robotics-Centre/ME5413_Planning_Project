@@ -18,7 +18,7 @@
       <child link="${name}" />
     </joint>
   </xacro:macro>
-  
+
   <!-- Generate a set of four standoffs from a payload mount point. -->
   <xacro:macro name="standoff_box" params="prefix parent height">
     <xacro:standoff name="${prefix}_standoff0" length="${height}" parent="${parent}">
