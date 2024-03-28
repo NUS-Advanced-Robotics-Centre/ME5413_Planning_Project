@@ -37,6 +37,8 @@
 #include <dynamic_reconfigure/server.h>
 #include <me5413_world/path_trackerConfig.h>
 
+#include "me5413_world/pid.hpp"
+
 namespace me5413_world 
 {
 
@@ -52,10 +54,9 @@ class PathTrackerNode
 
   tf2::Transform convertPoseToTransform(const geometry_msgs::Pose& pose);
   geometry_msgs::Twist computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
-  double computeDistance(const geometry_msgs::Point& p1, const geometry_msgs::Point& p2);
-  double computeThrottle(double distance_to_goal);
   double computeSteering(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
   double computeLookaheadDistance(const nav_msgs::Odometry& odom_robot);
+  //tf2::Vector3 findClosestPointOnPath(const tf2::Vector3& point_robot, const std::vector<tf2::Vector3>& path_points, double lookahead_distance);
  
   // ROS declaration
   ros::NodeHandle nh_;
@@ -74,6 +75,11 @@ class PathTrackerNode
   std::string robot_frame_;
   nav_msgs::Odometry odom_world_robot_;
   geometry_msgs::Pose pose_world_goal_;
+
+  // Controllers
+  control::PID pid_;
+
+  // std::vector<tf2::Vector3> path_points_;
 };
 
 } // namespace me5413_world
