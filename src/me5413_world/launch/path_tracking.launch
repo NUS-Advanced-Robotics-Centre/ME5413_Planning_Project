@@ -1,7 +1,7 @@
 <launch>
   <!-- Launch the ME5413 Path Publisher Node -->
   <node ns="me5413_world" pkg="me5413_world" type="path_publisher_node" name="path_publisher_node" output="screen" />
-  <!-- Launch the ME5413 Path Publisher Node -->
+  <!-- Launch the ME5413 Path Tracker Node -->
   <node ns="me5413_world" pkg="me5413_world" type="path_tracker_node" name="path_tracker_node" output="screen" />
 
   <!-- Launch Rviz with our settings -->

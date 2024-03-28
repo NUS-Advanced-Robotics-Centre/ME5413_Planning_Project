@@ -51,3 +51,16 @@ add_dependencies(path_publisher_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME
 add_executable(path_tracker_node src/path_tracker_node.cpp)
 target_link_libraries(path_tracker_node ${catkin_LIBRARIES})
 add_dependencies(path_tracker_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
+
+
+# add_executable(pure_pursuit_closest_point_node src/pure_pursuit_closest_point_approach.cpp)
+# target_link_libraries(pure_pursuit_closest_point_node ${catkin_LIBRARIES})
+# add_dependencies(pure_pursuit_closest_point_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
+
+# add_executable(pure_pursuit_linear_node src/pure_pursuit_linear_approach.cpp)
+# target_link_libraries(pure_pursuit_linear_node ${catkin_LIBRARIES})
+# add_dependencies(pure_pursuit_linear_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
+
+add_executable(pure_pursuit_target_point_node src/pure_pursuit_target_point_approach.cpp)
+target_link_libraries(pure_pursuit_target_point_node ${catkin_LIBRARIES})
+add_dependencies(pure_pursuit_target_point_node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)

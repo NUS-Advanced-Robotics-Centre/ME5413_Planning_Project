@@ -181,7 +181,7 @@ void PathPublisherNode::publishLocalPath(const geometry_msgs::Pose &robot_pose, 
   else if (id_next >= this->global_path_msg_.poses.size() - 1)
   {
     ROS_WARN("Robot has reached the end of the track, please restart");
-  }
+  } 
   else
   {
     this->current_id_ = std::max(this->current_id_, id_next - 1);
