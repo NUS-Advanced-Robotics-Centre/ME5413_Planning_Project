@@ -1,9 +1,9 @@
 /** path_tracker_node.hpp
- *
+ * 
  * Copyright (C) 2024 Shuo SUN & Advanced Robotics Center, National University of Singapore
- *
+ * 
  * MIT License
- *
+ * 
  * Declarations for PathTrackerNode class
  */
 
@@ -25,6 +25,8 @@
 #include <geometry_msgs/TransformStamped.h>
 
 #include <tf2/convert.h>
+#include "angles/angles.h"
+#include <tf2/utils.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Transform.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -37,7 +39,7 @@
 
 #include "me5413_world/pid.hpp"
 
-namespace me5413_world
+namespace me5413_world 
 {
 
 class PathTrackerNode
@@ -48,16 +50,16 @@ class PathTrackerNode
 
  private:
   void robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom);
-  void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& goal_pose);
   void localPathCallback(const nav_msgs::Path::ConstPtr& path);
 
   tf2::Transform convertPoseToTransform(const geometry_msgs::Pose& pose);
-  double computeStanelyControl(const double heading_error, const double cross_track_error, const double velocity);
   geometry_msgs::Twist computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
-
+  double computeSteering(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
+  double computeLookaheadDistance(const nav_msgs::Odometry& odom_robot);
+  //tf2::Vector3 findClosestPointOnPath(const tf2::Vector3& point_robot, const std::vector<tf2::Vector3>& path_points, double lookahead_distance);
+ 
   // ROS declaration
   ros::NodeHandle nh_;
-  ros::Timer timer_;
   ros::Subscriber sub_robot_odom_;
   ros::Subscriber sub_local_path_;
   ros::Publisher pub_cmd_vel_;
@@ -76,6 +78,8 @@ class PathTrackerNode
 
   // Controllers
   control::PID pid_;
+
+  // std::vector<tf2::Vector3> path_points_;
 };
 
 } // namespace me5413_world
