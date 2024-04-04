@@ -17,6 +17,9 @@ namespace me5413_world
 double SPEED_TARGET;
 double PID_Kp, PID_Ki, PID_Kd;
 double STANLEY_K;
+double MAX_LOOK_AHEAD_DISTANCE;
+double LOOK_AHEAD_MULTIPLIER;
+double ROBOT_LENGTH;
 bool PARAMS_UPDATED;
 
 void dynamicParamCallback(const me5413_world::path_trackerConfig& config, uint32_t level)
@@ -29,6 +32,10 @@ void dynamicParamCallback(const me5413_world::path_trackerConfig& config, uint32
   PID_Kd = config.PID_Kd;
   // Stanley
   STANLEY_K = config.stanley_K;
+
+  MAX_LOOK_AHEAD_DISTANCE = config.max_look_ahead_distance;
+  LOOK_AHEAD_MULTIPLIER = config.look_ahead_distance_multiplier;
+  ROBOT_LENGTH = config.robot_length;
 
   PARAMS_UPDATED = true;
 }
@@ -51,10 +58,30 @@ PathTrackerNode::PathTrackerNode() : tf2_listener_(tf2_buffer_)
 
 void PathTrackerNode::localPathCallback(const nav_msgs::Path::ConstPtr& path)
 {
-  // Calculate absolute errors (wrt to world frame)
-  this->pose_world_goal_ = path->poses[11].pose;
-  this->pub_cmd_vel_.publish(computeControlOutputs(this->odom_world_robot_, this->pose_world_goal_));
+  // // Calculate absolute errors (wrt to world frame)
+  // tf2::Vector3 point_robot;
+  // tf2::fromMsg(this->odom_world_robot_.pose.pose.position, point_robot);
+  // auto it = std::find_if(
+  //   path->poses.begin(),
+  //   path->poses.end(),
+  //   [&](const geometry_msgs::PoseStamped& pose_stamped)
+  //   {
+  //     tf2::Vector3 point;
+  //     tf2::fromMsg(pose_stamped.pose.position, point);
+  //     tf2::Vector3 velocity;
+  //     tf2::fromMsg(this->odom_world_robot_.twist.twist.linear, velocity);
+  //     return std::min(MAX_LOOK_AHEAD_DISTANCE, LOOK_AHEAD_MULTIPLIER*velocity.length()) <= tf2::tf2Distance(point, point_robot);
+  //   });
 
+  // if(it != path->poses.end())
+  // {
+  //   this->pose_world_goal_ = it->pose;
+  // }
+  // else
+  // {
+    this->pose_world_goal_ = path->poses[11].pose;
+  // }
+  this->pub_cmd_vel_.publish(computeControlOutputs(this->odom_world_robot_, this->pose_world_goal_));
   return;
 }
 
@@ -65,6 +92,13 @@ void PathTrackerNode::robotOdomCallback(const nav_msgs::Odometry::ConstPtr& odom
   this->odom_world_robot_ = *odom.get();
 
   return;
+}
+
+double PathTrackerNode::computePurePursuitControl(const tf2::Vector3& point_robot, const tf2::Vector3& point_goal, const double& yaw_robot, const double& yaw_goal, const double& velocity)
+{
+  double alpha = atan2(point_goal.getY() - point_robot.getY(), point_goal.getX() - point_robot.getX()) - yaw_robot;
+  double delta = atan2(2.0*ROBOT_LENGTH*std::sin(alpha), std::max(velocity*LOOK_AHEAD_MULTIPLIER, MAX_LOOK_AHEAD_DISTANCE));
+  return unifyAngleRange(yaw_goal - yaw_robot + delta);
 }
 
 double PathTrackerNode::computeStanelyControl(const double heading_error, const double cross_track_error, const double velocity)
@@ -110,7 +144,8 @@ geometry_msgs::Twist PathTrackerNode::computeControlOutputs(const nav_msgs::Odom
     PARAMS_UPDATED = false;
   }
   cmd_vel.linear.x = this->pid_.calculate(SPEED_TARGET, velocity);
-  cmd_vel.angular.z = computeStanelyControl(heading_error, lat_error, velocity);
+  // cmd_vel.angular.z = computeStanelyControl(heading_error, lat_error, velocity);
+  cmd_vel.angular.z = computePurePursuitControl(point_robot, point_goal, yaw_robot, yaw_goal, velocity);
 
   // std::cout << "robot velocity is " << velocity << " throttle is " << cmd_vel.linear.x << std::endl;
   // std::cout << "lateral error is " << lat_error << " heading_error is " << heading_error << " steering is " << cmd_vel.angular.z << std::endl;

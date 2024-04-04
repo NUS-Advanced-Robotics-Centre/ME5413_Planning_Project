@@ -33,6 +33,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <dynamic_reconfigure/server.h>
+#include <angles/angles.h>
 #include <me5413_world/path_trackerConfig.h>
 
 #include "me5413_world/pid.hpp"
@@ -53,6 +54,7 @@ class PathTrackerNode
 
   tf2::Transform convertPoseToTransform(const geometry_msgs::Pose& pose);
   double computeStanelyControl(const double heading_error, const double cross_track_error, const double velocity);
+  double computePurePursuitControl(const tf2::Vector3& point_robot, const tf2::Vector3& point_goal, const double& yaw_robot, const double& yaw_goal, const double& velocity);
   geometry_msgs::Twist computeControlOutputs(const nav_msgs::Odometry& odom_robot, const geometry_msgs::Pose& pose_goal);
 
   // ROS declaration
